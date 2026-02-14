@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.log
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+static/
+.DS_Store
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+*.pyvenv
+
+# Database
+*.sqlite3
+*.db
+
+# Static files
+staticfiles/
+static_root/
+media_root/
+
+# Environment variables
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
