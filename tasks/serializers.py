@@ -3,7 +3,6 @@ from django.utils import timezone
 from .models import Task
 
 class TaskSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(
         read_only=True,
         format='%d.%m.%Y %H:%M',
@@ -12,7 +11,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'status', 'created_at']
+        fields = ['id', 'title', 'description', 'is_completed', 'created_at']
         extra_kwargs = {
             'id': {
                 'read_only': True
@@ -41,8 +40,3 @@ class TaskSerializer(serializers.ModelSerializer):
                 'help_text': 'Отметьте, если задача выполнена'
             }
         }
-
-    def get_status(self, obj):
-        if obj.is_completed:
-            return "Выполнено"
-        return "В процессе"
