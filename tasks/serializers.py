@@ -8,10 +8,11 @@ class TaskSerializer(serializers.ModelSerializer):
         format='%d.%m.%Y %H:%M',
         default_timezone=timezone.get_current_timezone()
     )
+    username = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'is_completed', 'created_at']
+        fields = ['id', 'title', 'description', 'is_completed', 'created_at', 'user', 'username']
         extra_kwargs = {
             'id': {
                 'read_only': True
@@ -40,3 +41,13 @@ class TaskSerializer(serializers.ModelSerializer):
                 'help_text': 'Отметьте, если задача выполнена'
             }
         }
+
+    def get_username(self, obj):
+        return obj.user.username if obj.user else None
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+
+        return super().create(validated_data)

@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Task
-from .serializers import (TaskSerializer)
+from .serializers import TaskSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -15,7 +15,7 @@ def task_list_api_view(request):
                     status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
-        serializer = TaskSerializer(data=request.data)
+        serializer = TaskSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()
