@@ -1,14 +1,16 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Task
 from .serializers import TaskSerializer
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def task_list_api_view(request):
     if request.method == 'GET':
-        tasks = Task.objects.all()
+        tasks = Task.objects.filter(user=request.user)
         data = TaskSerializer(tasks, many=True).data
 
         return Response(data=data,
@@ -29,9 +31,10 @@ def task_list_api_view(request):
 
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def task_detail_api_view(request, pk):
     try:
-        task = Task.objects.get(pk=pk)
+        task = Task.objects.get(pk=pk, user=request.user)
     except Task.DoesNotExist:
         return Response(
             {'error': 'задача не найдена'},
