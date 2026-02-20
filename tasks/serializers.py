@@ -1,6 +1,37 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Task
+from .models import Task, Tag
+from users.serializers import UserSerializer
+
+
+class TagSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', 'user']
+        extra_kwargs = {
+            'id': {
+                'read_only': True
+            },
+            'name': {
+                'required': True,
+                'max_length': 50,
+                'error_messages': {
+                    'required': 'Пожалуйста введите название тега',
+                    'max_length': 'Название превышает допустимое количество символов'
+                }
+            },
+            'user': {'read_only': True}
+        }
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+
+        return super().create(validated_data)
+
 
 class TaskSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(
@@ -8,11 +39,13 @@ class TaskSerializer(serializers.ModelSerializer):
         format='%d.%m.%Y %H:%M',
         default_timezone=timezone.get_current_timezone()
     )
-    username = serializers.SerializerMethodField()
+
+    tags = TagSerializer(many=True)
+    user = UserSerializer()
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'is_completed', 'created_at', 'user', 'username']
+        fields = ['id', 'title', 'description', 'is_completed', 'created_at', 'user', 'tags']
         extra_kwargs = {
             'id': {
                 'read_only': True
@@ -41,9 +74,6 @@ class TaskSerializer(serializers.ModelSerializer):
                 'help_text': 'Отметьте, если задача выполнена'
             }
         }
-
-    def get_username(self, obj):
-        return obj.user.username if obj.user else None
 
     def create(self, validated_data):
         request = self.context.get('request')
